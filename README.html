@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bamboo plan overview</title>
+    <style>
+    </style>
+
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+    <style>
+        .task-list-item {
+            list-style-type: none;
+        }
+
+        .task-list-item-checkbox {
+            margin-left: -20px;
+            vertical-align: middle;
+        }
+    </style>
+
+
+
+</head>
+
+<body class="vscode-body vscode-light">
+    <h1 id="bamboo-plan-overview">Bamboo plan overview</h1>
+    <p><strong>A simple web application to show overview of all branches in a plan and their build statistics</strong>
+    </p>
+    <h1 id="prerequisites">Prerequisites</h1>
+    <ol>
+        <li>Python3</li>
+        <li>Install all libraries in <code>requirements.txt</code> using pip</li>
+        <li>Update all required parameter values in <code>server_config.py</code></li>
+    </ol>
+    <h1 id="usage">Usage</h1>
+    <pre><code class="language-sh">
+        <div>python flaskapp.py</div>
+    </code></pre>
+        
+    <p>Running the above command by default runs an application on port 5000 and can be accessed at : <a href="http://localhost:5000">http://localhost:5000</a></p>
+    <p>The application exposes below 2 apis:</p>
+    
+    <pre><code class="language-sh">
+        <div><span class="hljs-comment"># check to see the build status for all branches in a plan</span>http://&lt;server_ip&gt;:&lt;server_port&gt;/plan/&lt;planKey&gt;/allbranches <span class="hljs-comment">#http://&lt;server_ip&gt;:&lt;server_port&gt;/plan/<plan_name>/allbranches</span></div>
+    </code></pre>
+
+    <pre><code class="language-sh">
+        <div><span class="hljs-comment"># check to see if a branch is onboarded to a plan</span> http://&lt;server_ip&gt;:&lt;server_port&gt;/plan/&lt;planKey&gt;/branch/&lt;branchname&gt; <span class="hljs-comment">#http://&lt;server_ip&gt;:&lt;server_port&gt;/plan/<plan_name>/branch/<branch_name></span></div>
+    </code></pre>
+
+    <h1 id="deploy">Deploy</h1>
+    
+    <ul>
+        <li>To deploy your app on an apache server using wsgi, refer: <a
+                href="https://asdkazmi.medium.com/deploying-flask-app-with-wsgi-and-apache-server-on-ubuntu-20-04-396607e0e40f">https://asdkazmi.medium.com/deploying-flask-app-with-wsgi-and-apache-server-on-ubuntu-20-04-396607e0e40f</a>
+        </li>
+        <li><a href="apache_config/flaskapp.conf">Apache config</a></li>
+    </ul>
+    <h1 id="notes">Notes</h1>
+    <ul>
+        <li><a href="https://docs.atlassian.com/atlassian-bamboo/REST/6.8.0/">API Documentation</a></li>
+        <li><a href="#">How
+                to know Bamboo Plans and its Details</a></li>
+        <li><a
+                href="#">Apache</a>
+        </li>
+    </ul>
+
+    <div class="footer">
+        <p class="copyright">© {{ year }} Nithin.</p>
+    </div>
+
+</body>
+</html>

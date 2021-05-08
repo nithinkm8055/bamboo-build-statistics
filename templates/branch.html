@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Build statistics for all active branches in a bamboo plan">
+        <meta name="keywords" content="bamboo, pwc">
+        <link rel="icon" href="../../../../static/images/favicon.ico">
+        <link rel="stylesheet" href="../../../../static/css/bootstrap.min.css">
+        <title>Bamboo plan overview</title>
+        
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script>
+            $(window).load(function() {
+                 $(".se-pre-con").fadeOut("slow");;
+            });
+        </script>
+       
+        <style>
+            .footer {
+               position: float;
+               left: 0;
+               bottom: 0;
+               width: 100%;
+               background-color: rgb(61, 112, 207);
+               color: white;
+               text-align: center;
+            }
+            .copyright {
+                color: #EAF6F6;
+                font-size: 0.75rem;
+                padding: 20px 0;
+            }
+
+            th{
+                background: #FFF;
+            }
+
+            .table-wrapper th{
+                position: sticky;
+                top: 0;
+            }
+
+            th a.sort-by { 
+                padding-right: 18px;
+                position: relative;
+            }
+
+            a.sort-by:before,
+            a.sort-by:after {
+                border: 4px solid transparent;
+                content: "";
+                display: block;
+                height: 0;
+                right: 5px;
+                top: 50%;
+                position: absolute;
+                width: 0;
+            }
+            a.sort-by:before {
+                border-bottom-color: #666;
+                margin-top: -9px;
+            }
+            a.sort-by:after {
+                border-top-color: #666;
+                margin-top: 1px;
+            }
+
+            .no-js #loader { display: none;  }
+            .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+            .se-pre-con {
+                position: fixed;
+                left: 0px;
+                top: 0px;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                background: url(../../static/images/loading.gif) center no-repeat #fff;
+            }
+
+
+        </style>
+    </head>
+    <body>
+        <div class="se-pre-con"></div>
+
+        <div class="container" style="width: 100%;">
+            <h2 style="text-align: center;">Bamboo Plan: <a href="<server_ip>>/browse/{{ planKey }}">{{ planKey }}</a></h2>
+            <div class="table-responsive table-wrapper"> 
+                <table id="overviewTable" class="table table-bordered table-striped table-hover">
+                    <thead style="font-weight:bold">
+                        <tr>
+                            <th>Branch</th>
+                            <th>Last Build Status</th>
+                            <th>Number of recent Builds</th>
+                            <th>Success</th>
+                            <th>Failure</th>
+                            <th>Last Build Duration (in hr)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       
+                            <td ><a href="<server_ip>/browse/{{ branch_key }}">{{ branch }}</a></td>
+
+                            {% if latest_build_status == "Successful" %}
+                                <td style="background-color:#349734">{{ latest_build_status }}</td>
+                            {% elif latest_build_status == "Failed" %}
+			    	            <td style="background-color:#e68888">{{ latest_build_status }}</td>
+			                {% else %}
+				                <td style="background-color:#d2dbd2">{{ latest_build_status }}</td> 
+                            {% endif %}
+                            <td>{{ recent_builds }}</td>
+                            <td>{{ number_of_pass_builds }}</td>
+                            <td>{{ number_of_fail_builds }}</td>
+                            <td>{{ last_build_duration }}</td>
+                        </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+   
+        <script src="" async defer></script>
+
+        <div class="footer">
+            <p class="copyright">© {{ year }} Nithin.</p>
+        </div>
+    </body>
+</html>

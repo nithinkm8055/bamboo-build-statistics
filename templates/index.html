@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Build statistics for all active branches in a bamboo plan">
+        <meta name="keywords" content="bamboo, pwc">
+        <link rel="icon" href="../../static/images/favicon.ico">
+        <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
+        <title>Bamboo plan overview</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script>
+            $(window).load(function() {
+                 $(".se-pre-con").fadeOut("slow");;
+            });
+        </script>
+       
+        <style>
+            .footer {
+               position: float;
+               left: 0;
+               bottom: 0;
+               width: 100%;
+               background-color: rgb(61, 112, 207);
+               color: white;
+               text-align: center;
+            }
+            .copyright {
+                color: #EAF6F6;
+                font-size: 0.75rem;
+                padding: 20px 0;
+            }
+
+            th{
+                background: #FFF;
+            }
+
+            .table-wrapper th{
+                position: sticky;
+                top: 0;
+            }
+
+            th a.sort-by { 
+                padding-right: 18px;
+                position: relative;
+            }
+
+            a.sort-by:before,
+            a.sort-by:after {
+                border: 4px solid transparent;
+                content: "";
+                display: block;
+                height: 0;
+                right: 5px;
+                top: 50%;
+                position: absolute;
+                width: 0;
+            }
+            a.sort-by:before {
+                border-bottom-color: #666;
+                margin-top: -9px;
+            }
+            a.sort-by:after {
+                border-top-color: #666;
+                margin-top: 1px;
+            }
+
+            .no-js #loader { display: none;  }
+            .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+            .se-pre-con {
+                position: fixed;
+                left: 0px;
+                top: 0px;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                background: url(../../static/images/loading.gif) center no-repeat #fff;
+            }
+
+
+        </style>
+    </head>
+    <body>
+        <div class="se-pre-con"></div>
+
+        <div class="container" style="width: 100%;">
+            <h2 style="text-align: center;">Bamboo Plan: <a href="<server_ip>/browse/{{ planKey }}">{{ planKey }}</a></h2>
+            <p style="text-align: center;">Total number of branches : {{ number_of_branches }}</p>
+            <p style="text-align: center;">Total number of bamboo builds : {{ total_number_of_bamboo_builds }}</p>
+            <input style="width: 350px;" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for branches.." title="Type in a name">
+            <div class="table-responsive table-wrapper"> 
+                <table id="overviewTable" class="table table-bordered table-striped table-hover">
+                    <thead style="font-weight:bold">
+                        <tr>
+                            <th>Branch</th>
+                            <th>Status</th>
+                            <th>Number of recent Builds</th>
+                            <th>Success</th>
+                            <th>Failure</th>
+                            <th onclick="sortTable(5)"><a href="#" class="sort-by"></a>Success Ratio %</th>
+                            <th onclick="sortTable(6)"><a href="#" class="sort-by"></a>Total Number of Builds</th>
+                            <th onclick="sortTable(7)"><a href="#" class="sort-by"></a>Last Build Duration (in hours)</th>
+                            <th onclick="sortTable(8)"><a href="#" class="sort-by"></a>Build start time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in branches.items() %}
+                            {%  if value[4] >= 70 %}
+                                <tr class="success">
+                            {%  elif value[4] < 70 and value[4] >= 50 %}
+                                <tr class="info">
+                            {%  elif value[4] < 50 and value[4] >= 30 %}
+                                <tr class="warning">
+                            {%  elif value[4] < 30 %}
+                                <tr class="danger">
+                            {% endif %}
+                            <td><a href="<server_ip>/browse/{{ key.get('key') }}">{{ key.get("shortName") }}</a></td>
+                            
+                            {% if value[0] == "Successful" %}
+                                <td style="background-color:#349734">{{ value[0] }}</td>
+                            {% elif value[0] == "Failed" %}
+			    	            <td style="background-color:#e68888">{{ value[0] }}</td>
+			                {% else %}
+				                <td style="background-color:#d2dbd2">{{ value[0] }}</td> 
+                            {% endif %}
+                            <td>{{ value[1] }}</td>
+                            <td>{{ value[2] }}</td>
+                            <td>{{ value[3] }}</td>
+                            <td>{{ value[4] }}</td>
+                            <td>{{ value[5] }}</td>
+                            <td>{{ value[6] }}</td>
+                            <td>{{ value[7] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr style="background-color:#f5f1f1">
+                            <td>Total Number of Bamboo builds on Plan</td>
+                            <td colspan=8 style="text-align: center;">{{ total_number_of_bamboo_builds }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+   
+        <script>
+
+            function myFunction() {
+                var input, filter, table, tr, td, i, txtValue;
+                input = document.getElementById("myInput");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("overviewTable");
+                tr = table.getElementsByTagName("tr");
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }       
+                }
+            }
+
+            function sortTable(n) {
+                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                table = document.getElementById("overviewTable");
+                switching = true;
+                // Set the sorting direction to ascending:
+                dir = "asc";
+                /* Make a loop that will continue until
+                no switching has been done: */
+                while (switching) {
+                    // Start by saying: no switching is done:
+                    switching = false;
+                    rows = table.rows;
+                    /* Loop through all table rows (except the
+                    first, which contains table headers and last which contains total): */
+                    for (i = 1; i < (rows.length - 2); i++) {
+                        // Start by saying there should be no switching:
+                        shouldSwitch = false;
+                        /* Get the two elements you want to compare,
+                        one from current row and one from the next: */
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        /* Check if the two rows should switch place,
+                        based on the direction, asc or desc: */
+
+                        if (n == 8 ){
+                            xValue = Math.round(Date.parse(x.innerHTML) / 1000)
+                            yValue = Math.round(Date.parse(y.innerHTML) / 1000)
+                        } else {
+                            xValue = parseFloat(x.innerHTML.toLowerCase())
+                            yValue = parseFloat(y.innerHTML.toLowerCase())
+                        }
+
+                        if (dir == "asc") {
+                            if (xValue > yValue) {
+                                // If so, mark as a switch and break the loop:
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (dir == "desc") {
+                            if (xValue < yValue) {
+                                // If so, mark as a switch and break the loop:
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        /* If a switch has been marked, make the switch
+                        and mark that a switch has been done: */
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                        // Each time a switch is done, increase this count by 1:
+                        switchcount ++;
+                    } else {
+                        /* If no switching has been done AND the direction is "asc",
+                        set the direction to "desc" and run the while loop again. */
+                        if (switchcount == 0 && dir == "asc") {
+                            dir = "desc";
+                            switching = true;
+                        }
+                    }
+                }
+            }
+
+        </script>
+        <script src="" async defer></script>
+
+        <div class="footer">
+            <p class="copyright">© {{ year }}  Nithin.</p>
+        </div>
+    </body>
+</html>
